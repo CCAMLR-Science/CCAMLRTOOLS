@@ -1,0 +1,22 @@
+Package: CCAMLRTOOLS
+Type: Package
+Title: Package for working with CCAMLR data
+Version: 1.0
+Authors@R: 
+    person(given = "Daphnis",
+           family = "De Pooter",
+           role = c("aut", "cre"),
+           email = "daphnis.depooter@ccamlr.org",
+           comment = c(ORCID = "0000-0001-7870-9907"))
+Description: This package is for working with CCAMLR data extracts. The package contains useful functions for visualistation and data analysis. 
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Imports:
+	dplyr,
+	CCAMLRGIS,
+	ggplot2
+RoxygenNote: 7.2.3
+Depends: 
+    R (>= 3.5),
+    CCAMLRGIS (>= 4.0.1)
