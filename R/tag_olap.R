@@ -533,8 +533,8 @@ tag_olap <- function(ccamlr_data, taxon = NA, seasons = NULL, vessels = NULL, ar
         geom_point() +
         labs(
           title = plot_title,
-          x = "length category (cm)",
-          y = "ratio of fish at length"
+          x = "length class (cm)",
+          y = "proportion  of fish at length"
         ) +
         theme_minimal() +
         theme(

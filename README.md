@@ -4,8 +4,9 @@
 # CCAMLRTOOLS
 
 An R package for processing and visualizing official CCAMLR data
-provided by the CCAMLR Secretariat to CCAMLR Members according to the
-Rules for Access and Use of CCAMLR data.
+provided by the CCAMLR Secretariat to CCAMLR Members following the
+procedure specified in the [Rules for Access and Use of CCAMLR
+Data](https://www.ccamlr.org/en/document/publications/rules-access-and-use-ccamlr-data).
 
 ## Installation
 
@@ -69,8 +70,8 @@ division (asd), the research block (rb) or small scale research unit
 (ssru)*), or fishing `vessels` (*name of the vessels*) for which you
 would like to calculate the tag overlap statistic.
 
-To start, lets the demo data included in the package. Alternatively if
-you received a CCAMLR data extact, you could load those data as
+To start, lets use the demo data included in the package. Alternatively
+if you received a CCAMLR data extract, you could load those data as
 explained above.
 
 ``` r
@@ -78,8 +79,8 @@ ccamlr_data <- CCAMLRTOOLS::demo_data$olap
 ```
 
 If for example you would like to calculate the tag overlap statistics
-for all vessels in during a specific fishing season during in a specific
-area (*e.g. SSRU 881A*) you can provide the following code.
+for all vessels during a specific fishing season in a specific area
+(*e.g. SSRU 881A*) use the following code.
 
 ``` r
 tag_olap(ccamlr_data = ccamlr_data, taxon = "TOA", seasons = c("2017"), areas = c("881A"))
@@ -94,9 +95,8 @@ tag_olap(ccamlr_data = ccamlr_data, taxon = "TOA", seasons = c("2017"), areas = 
 | 2017_vessel_5\_881A | 881A |   2017 | vessel_5  | CDE              | TOA   | 14         |          8.4 |     610 |         85 |        9 |            0 |      1.1 |       42.76 |
 
 If you would like to calculate the tag overlap statistics for a specific
-vessel during a specific fishing season during in a multiples areas
-(*e.g. SSRU 881A, RB 481_1 and asd 882*) you can provide the following
-code.
+vessel during a specific fishing season in a multiples areas (*e.g. SSRU
+881A, RB 481_1 and asd 882*) use the following code.
 
 ``` r
 tag_olap(ccamlr_data = ccamlr_data, taxon = "TOA", vessels = c("vessel_1"), 
@@ -110,11 +110,10 @@ tag_olap(ccamlr_data = ccamlr_data, taxon = "TOA", vessels = c("vessel_1"),
 | 2017_vessel_1\_882   | 882   |   2017 | vessel_1  | XYZ              | TOA   | 15         |          3.6 |     148 |         54 |        6 |            0 |      1.7 |       64.35 |
 
 If you would like to calculate the tag overlap statistics for a specific
-vessel during a specific fishing season during for all areas in to which
-CM 41-01 Annex C specifies a minimum overlap statistic, you can provide
-the following code. A tag overlap statistic value of NC indicates that
-no tag overlap statistic was calculated because less than 30 fish were
-tagged.
+vessel during a specific fishing season for all areas for which CM 41-01
+Annex C specifies a minimum overlap statistic, use the following code. A
+tag overlap statistic value of NC indicates that no tag overlap
+statistic was calculated because less than 30 fish were tagged.
 
 ``` r
 tag_olap(ccamlr_data = ccamlr_data, taxon = "TOP", vessels = c("vessel_2"), 
@@ -136,7 +135,7 @@ released fish.
 olap_toa <- tag_olap(ccamlr_data = ccamlr_data, taxon = "TOA", vessels = c("vessel_2"), 
                      seasons = c("2017"), areas = c("881"), plot = TRUE)
 olap_toa$summary
-plot(olap_toa$plots$`2017_vessel_2_881`)
+olap_toa$plots$`2017_vessel_2_881`
 ```
 
 | GROUP_ID           | AREA | SEASON | SHIP_NAME | NATIONALITY_CODE | TAXON | LOGBOOK_ID | CATCH_TONNES | CATCH_N | MEASURED_N | TAGGED_N | RECAPTURED_N | TAG_RATE | TAG_OVERLAP |
