@@ -388,7 +388,7 @@ tag_olap <- function(ccamlr_data, taxon = NA, seasons = NULL, vessels = NULL, ar
       CATCH_TONNES = round(sum(greenweight_caught_kg, na.rm = TRUE) / 1000, 1),
       CATCH_N = sum(individualcount_caught, na.rm = TRUE),
       MEASURED_N = sum(n_measured, na.rm = TRUE),
-      TAGGED_N = sum(n_tagg, na.rm = TRUE),
+      TAGGED_N = round(sum(n_tagg, na.rm = TRUE),0),
       RECAPTURED_N = sum(n, na.rm = TRUE),
       TAG_RATE = round(TAGGED_N / CATCH_TONNES, 1),
       .groups = "drop"
@@ -496,6 +496,7 @@ tag_olap <- function(ccamlr_data, taxon = NA, seasons = NULL, vessels = NULL, ar
       # Obtain values for the title of the chart
       olap_g <- dplyr::filter(olap, GROUP_ID == group)
       group_info <- dplyr::filter(tag_rate, GROUP_ID == group)
+      
       plot_title <- sprintf(
         'Vessel %s in season %s in area %s had an overlap statistic of %s for %s',
         group_info$SHIP_NAME, group_info$SEASON, group_info$AREA,
@@ -505,7 +506,7 @@ tag_olap <- function(ccamlr_data, taxon = NA, seasons = NULL, vessels = NULL, ar
       # Set boundaries for the X axis of the plot.
       df <- dplyr::bind_rows(caught_freq_g, tagged_freq_g)
       
-      caught_n = sum(caught_freq_g$counts)
+      caught_n = round(sum(caught_freq_g$counts),0)
       
       max <- (df %>% 
         dplyr::filter(counts > 0) %>% 
