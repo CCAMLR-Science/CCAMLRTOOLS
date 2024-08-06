@@ -29,9 +29,8 @@ tag_olap <- function(ccamlr_data, taxon = NA, seasons = NULL, vessels = NULL, ar
   
   # Check if valid taxon is provided (TOP or TOA)
   if (!taxon %in% c('TOP', 'TOA')) {
-    cat('No valid taxon provided (only TOP or TOA are accepted). The tag overlap statistic will be calculated for TOA\n')
-    taxon <- 'TOA'
-  }
+    stop('No valid taxon provided (only TOP or TOA are accepted).')
+      }
   
   # Set areas for CCEP condition and set filter_areas parameter to determine if the data will be filtered on area.
 
@@ -216,7 +215,7 @@ tag_olap <- function(ccamlr_data, taxon = NA, seasons = NULL, vessels = NULL, ar
     }
   }
   
-  cat('Overlap statistic calculated for the following areas:', 
+  message('Overlap statistic calculated for the following areas:', 
       paste(sort(unique(aggregation$area)), collapse = '; '), '\n')
   
   # Only calculate overlap statistic when observer data are available
