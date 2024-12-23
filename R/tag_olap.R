@@ -2,12 +2,19 @@
 #'
 #' This function computes the tag overlap statistic and tagging rate per vessel based on the provided CCAMLR data extract.
 #'
-#' @param ccamlr_data A mandatory parameter representing the official CCAMLR data extract. The function relies on the presence of five specific data frames in the extract: C2, C2_CATCH, OBS_HAUL_BIOLOGY, OBS_HAUL_TAG_RELEASE, OBS_HAUL_TAG_RECAPTURE.
-#' @param taxon A mandatory parameter specifying the taxon code for which the overlap statistic is calculated. Options are 'TOP' or 'TOA'.
-#' @param seasons An optional parameter with a default value of NULL. Specify a list of seasons for which you want to calculate the overlap statistic, e.g., c(2020, 2021, 2022). The default value of NULL calculates the overlap statistics for all seasons present in the data.
-#' @param vessels An optional parameter with a default value of NULL. Specify a list of vessels for which you want to calculate the overlap statistic, e.g., c('Tronio', 'Janas'). The default value of NULL calculates the overlap statistics for all vessels present in the data.
-#' @param areas An optional parameter with a default value of 'ALL'. Specify a list of asd_codes, ssru_codes, or rb_codes for which you want to calculate the overlap statistic, e.g., c('881', '881H', '881K', '486_2', 'combined'). Use 'combined' to calculate a single combined statistic for all areas. Use 'CCEP' to calculate the overlap statistic solely for areas where a CM requires a minimum overlap. The default value of 'ALL' calculates the overlap statistics for all possible areas present in the data.
-#' @param plot An optional parameter with a default value of FALSE. When set to TRUE, the tag overlap statistic function will generate a plot for each calculated overlap statistic.
+#' @param ccamlr_data A required data extract provided by CCAMLR. The extract must contain five specific data frames: `C2`, `C2_CATCH`, `OBS_HAUL_BIOLOGY`, `OBS_HAUL_TAG_RELEASE`, and `OBS_HAUL_TAG_RECAPTURE`. These data frames are essential for calculating the overlap statistic.
+#' 
+#' @param taxon A required parameter indicating the taxon code for which the overlap statistic will be calculated. Accepted values are 'TOP' or 'TOA'.
+#'
+#' @param seasons Optional. A list of seasons for which to calculate the overlap statistic (e.g., `c(2020, 2021, 2022)`). If `NULL` (default), the function calculates the overlap for all seasons present in the data.
+#'
+#' @param vessels Optional. A list of vessels for which to calculate the overlap statistic (e.g., `c('Tronio', 'Janas')`). If `NULL` (default), the function calculates the overlap for all vessels in the dataset.
+#'
+#' @param areas Optional. A list of area codes (e.g., asd_codes, ssru_codes, or rb_codes such as `c('881', '881H', '881K', '486_2')`). Use `'combined'` to compute a single combined statistic for all areas or `'CCEP'` for areas requiring a minimum overlap according to Conservation Measures (CM). The default value is `'ALL'`, which calculates the overlap for all available areas. To define custom areas, set `areas = 'custom'` and provide the column name via the `custom_area` parameter.
+#'
+#' @param custom_areas Optional. Required when `areas = 'custom'`. This parameter must specify the name of the column in the `C2` table that contains the custom areas for which you want to calculate the overlap statistic.
+#'
+#' @param plot Optional. A logical flag (default is `FALSE`). When `TRUE`, the function generates a plot for each calculated overlap statistic.
 #' 
 #' @import dplyr ggplot2
 #' @export
@@ -18,7 +25,7 @@
 #' tag_olap(ccamlr_data = ccamlr_data, taxon = 'TOA', vessels = c('vessel_2'), seasons = c(2016, 2017), areas = c("881"), plot = TRUE)
 #'
 
-tag_olap <- function(ccamlr_data, taxon = NA, seasons = NULL, vessels = NULL, areas = 'ALL', ccep_season = NULL, plot = F) {
+tag_olap <- function(ccamlr_data, taxon = NA, seasons = NULL, vessels = NULL, areas = 'ALL', custom_areas = NULL, ccep_season = NULL, plot = F) {
   
   # Check if ccamlr_data is a list of required dataframes
   required_dataframes <- c('C2', 'C2_CATCH', 'OBS_HAUL_BIOLOGY', 'OBS_HAUL_TAG_RELEASE', 'OBS_HAUL_TAG_RECAPTURE')
@@ -32,6 +39,7 @@ tag_olap <- function(ccamlr_data, taxon = NA, seasons = NULL, vessels = NULL, ar
     stop('No valid taxon provided (only TOP or TOA are accepted).')
       }
   
+  custom_a = F
   # Set areas for CCEP condition and set filter_areas parameter to determine if the data will be filtered on area.
 
   if (length(areas) == 1) {
@@ -43,7 +51,18 @@ tag_olap <- function(ccamlr_data, taxon = NA, seasons = NULL, vessels = NULL, ar
         }
       CCEP <- TRUE
       filter_areas <- TRUE
-    } else {
+    } else if (areas == 'custom') {
+      if(is.null(custom_areas)){
+        stop('If areas = custom then custom_areas must be provided')
+      } 
+      if(!custom_areas %in% names(ccamlr_data$C2)){
+        stop('If areas = custom then the table C2 must contain the column name provided in custom_areas')
+      }
+      filter_areas <- TRUE
+      areas = ccamlr_data$C2[[custom_areas]]
+      CCEP <- FALSE
+      custom_a <- T
+    } else   {
       CCEP <- FALSE
       filter_areas <- areas != 'ALL'
     }
@@ -79,6 +98,16 @@ tag_olap <- function(ccamlr_data, taxon = NA, seasons = NULL, vessels = NULL, ar
   ########################################
   ### prepare aggregation dataframe  #####
   ########################################
+  
+  if (custom_a == T) {
+    
+    C2$area = C2[[custom_areas]]
+    aggregation <- C2 %>% dplyr::select(obs_logbook_id, c2_id, obs_haul_id, area, season_ccamlr, vessel_name,vessel_nationality_code) %>%
+      dplyr::mutate( GROUP_ID = paste0(season_ccamlr, "_", vessel_name, "_", area))
+    
+    aggregation <- aggregation %>% dplyr::select(GROUP_ID, obs_logbook_id, c2_id, obs_haul_id, area, season_ccamlr, vessel_name,vessel_nationality_code)
+
+  } else {
   
   aggregation <- C2 %>% dplyr::select(
     latitude_set_start, longitude_set_start,
@@ -192,12 +221,12 @@ tag_olap <- function(ccamlr_data, taxon = NA, seasons = NULL, vessels = NULL, ar
   aggregation = aggregation_rb %>% dplyr::bind_rows(aggregation_asd) %>% dplyr::bind_rows(aggregation_ssru) %>% dplyr::bind_rows(aggregation_combined) %>%
     dplyr::bind_rows(aggregation_mpa) %>%  dplyr::bind_rows(aggregation_ma) %>% dplyr::bind_rows(aggregation_882SRU_C_H) %>% dplyr::filter(!is.na(area))
   
-  aggregation <- aggregation %>% dplyr::select(GROUP_ID, obs_logbook_id, c2_id, obs_haul_id, area, asd, season_ccamlr, vessel_name,vessel_nationality_code)
+  aggregation <- aggregation %>% dplyr::select(GROUP_ID, obs_logbook_id, c2_id, obs_haul_id, area, season_ccamlr, vessel_name,vessel_nationality_code)
   
   
   rm("aggregation_rb", "aggregation_asd", 'aggregation_ssru', 'aggregation_combined', 'aggregation_ma', 'aggregation_mpa', 'aggregation_882SRU_C_H')
   
-  
+  }
   
   
   
@@ -222,8 +251,8 @@ tag_olap <- function(ccamlr_data, taxon = NA, seasons = NULL, vessels = NULL, ar
   
   # Only calculate overlap statistic when observer data are available
   NO_OBSERVER_DATA <- dplyr::filter(aggregation, is.na(obs_haul_id)) %>%
-    dplyr::distinct(c2_id, season_ccamlr, vessel_name, asd) %>%
-    dplyr::group_by(season_ccamlr, vessel_name, asd) %>%
+    dplyr::distinct(c2_id, season_ccamlr, vessel_name, area) %>%
+    dplyr::group_by(season_ccamlr, vessel_name, area) %>%
     dplyr::tally()
   
   aggregation <- dplyr::filter(aggregation, !is.na(obs_haul_id))
@@ -233,7 +262,7 @@ tag_olap <- function(ccamlr_data, taxon = NA, seasons = NULL, vessels = NULL, ar
       paste('No observer data available for', sum(NO_OBSERVER_DATA$n), 'records from seasons', 
             paste(unique(NO_OBSERVER_DATA$season_ccamlr), collapse = ', '), 'by vessels',
             paste(unique(NO_OBSERVER_DATA$vessel_name), collapse = ', '), 'in areas',
-            paste(unique(NO_OBSERVER_DATA$asd), collapse = ', '), 
+            paste(unique(NO_OBSERVER_DATA$area), collapse = ', '), 
             '. These records have been excluded from the calculation.')
     )
   }
@@ -523,30 +552,30 @@ tag_olap <- function(ccamlr_data, taxon = NA, seasons = NULL, vessels = NULL, ar
       
       
       # Generate plot
-      plots[[group]] <- ggplot(data = df, aes(x = xlab, y = freq, group = type)) +
-        geom_line(aes(color = type)) +
-        scale_colour_discrete(
+      plots[[group]] <-  ggplot2::ggplot(data = df,  ggplot2::aes(x = xlab, y = freq, group = type)) +
+        ggplot2::geom_line(ggplot2::aes(color = type)) +
+        ggplot2::scale_colour_discrete(
           labels = c(
             "released" = sprintf('released (n = %d)', group_info$TAGGED_N),
             "caught" = sprintf('caught (n = %d)', caught_n)
           ),
           limits = c("released", "caught")
         ) +
-        geom_point() +
-        labs(
+        ggplot2::geom_point() +
+        ggplot2::labs(
           title = plot_title,
           x = "length class (cm)",
           y = "proportion  of fish at length"
         ) +
-        theme_minimal() +
-        theme(
+        ggplot2::theme_minimal() +
+        ggplot2::theme(
           legend.position = c(0.9, 0.8),
-          legend.text = element_text(size = 14),
-          legend.title = element_blank(),
-          axis.text = element_text(size = 12),
-          axis.text.x = element_text(angle = 80, vjust = 0.5, hjust = 0.2),
-          axis.title = element_text(size = 14, face = "bold"),
-          plot.title = element_text(size = 15, face = "bold", hjust = 0.5)
+          legend.text = ggplot2::element_text(size = 14),
+          legend.title = ggplot2::element_blank(),
+          axis.text = ggplot2::element_text(size = 12),
+          axis.text.x = ggplot2::element_text(angle = 80, vjust = 0.5, hjust = 0.2),
+          axis.title = ggplot2::element_text(size = 14, face = "bold"),
+          plot.title = ggplot2::element_text(size = 15, face = "bold", hjust = 0.5)
         )
     }
     

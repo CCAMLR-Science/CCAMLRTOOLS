@@ -10,21 +10,25 @@ tag_olap(
   seasons = NULL,
   vessels = NULL,
   areas = "ALL",
+  custom_areas = NULL,
+  ccep_season = NULL,
   plot = F
 )
 }
 \arguments{
-\item{ccamlr_data}{A mandatory parameter representing the official CCAMLR data extract. The function relies on the presence of five specific data frames in the extract: C2, C2_CATCH, OBS_HAUL_BIOLOGY, OBS_HAUL_TAG_RELEASE, OBS_HAUL_TAG_RECAPTURE.}
+\item{ccamlr_data}{A required data extract provided by CCAMLR. The extract must contain five specific data frames: `C2`, `C2_CATCH`, `OBS_HAUL_BIOLOGY`, `OBS_HAUL_TAG_RELEASE`, and `OBS_HAUL_TAG_RECAPTURE`. These data frames are essential for calculating the overlap statistic.}
 
-\item{taxon}{A mandatory parameter specifying the taxon code for which the overlap statistic is calculated. Options are 'TOP' or 'TOA'.}
+\item{taxon}{A required parameter indicating the taxon code for which the overlap statistic will be calculated. Accepted values are 'TOP' or 'TOA'.}
 
-\item{seasons}{An optional parameter with a default value of NULL. Specify a list of seasons for which you want to calculate the overlap statistic, e.g., c(2020, 2021, 2022). The default value of NULL calculates the overlap statistics for all seasons present in the data.}
+\item{seasons}{Optional. A list of seasons for which to calculate the overlap statistic (e.g., `c(2020, 2021, 2022)`). If `NULL` (default), the function calculates the overlap for all seasons present in the data.}
 
-\item{vessels}{An optional parameter with a default value of NULL. Specify a list of vessels for which you want to calculate the overlap statistic, e.g., c('Tronio', 'Janas'). The default value of NULL calculates the overlap statistics for all vessels present in the data.}
+\item{vessels}{Optional. A list of vessels for which to calculate the overlap statistic (e.g., `c('Tronio', 'Janas')`). If `NULL` (default), the function calculates the overlap for all vessels in the dataset.}
 
-\item{areas}{An optional parameter with a default value of 'ALL'. Specify a list of asd_codes, ssru_codes, or rb_codes for which you want to calculate the overlap statistic, e.g., c('881', '881H', '881K', '486_2', 'combined'). Use 'combined' to calculate a single combined statistic for all areas. Use 'CCEP' to calculate the overlap statistic solely for areas where a CM requires a minimum overlap. The default value of 'ALL' calculates the overlap statistics for all possible areas present in the data.}
+\item{areas}{Optional. A list of area codes (e.g., asd_codes, ssru_codes, or rb_codes such as `c('881', '881H', '881K', '486_2')`). Use `'combined'` to compute a single combined statistic for all areas or `'CCEP'` for areas requiring a minimum overlap according to Conservation Measures (CM). The default value is `'ALL'`, which calculates the overlap for all available areas. To define custom areas, set `areas = 'custom'` and provide the column name via the `custom_area` parameter.}
 
-\item{plot}{An optional parameter with a default value of FALSE. When set to TRUE, the tag overlap statistic function will generate a plot for each calculated overlap statistic.}
+\item{custom_areas}{Optional. Required when `areas = 'custom'`. This parameter must specify the name of the column in the `C2` table that contains the custom areas for which you want to calculate the overlap statistic.}
+
+\item{plot}{Optional. A logical flag (default is `FALSE`). When `TRUE`, the function generates a plot for each calculated overlap statistic.}
 }
 \description{
 This function computes the tag overlap statistic and tagging rate per vessel based on the provided CCAMLR data extract.

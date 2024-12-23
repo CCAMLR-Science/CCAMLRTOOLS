@@ -86,13 +86,29 @@ for all vessels during a specific fishing season in a specific area
 tag_olap(ccamlr_data = ccamlr_data, taxon = "TOA", seasons = c("2017"), areas = c("881A"))
 ```
 
-| GROUP_ID            | AREA | SEASON | SHIP_NAME | NATIONALITY_CODE | TAXON | LOGBOOK_ID | CATCH_TONNES | CATCH_N | MEASURED_N | TAGGED_N | RECAPTURED_N | TAG_RATE | TAG_OVERLAP |
-|:--------------------|:-----|-------:|:----------|:-----------------|:------|:-----------|-------------:|--------:|-----------:|---------:|-------------:|---------:|------------:|
-| 2017_vessel_1\_881A | 881A |   2017 | vessel_1  | XYZ              | TOA   | 15         |          4.1 |     163 |        158 |       17 |            1 |      4.1 |       69.34 |
-| 2017_vessel_2\_881A | 881A |   2017 | vessel_2  | XYZ              | TOA   | 12         |         15.1 |    1241 |        284 |       48 |            0 |      3.2 |       77.06 |
-| 2017_vessel_3\_881A | 881A |   2017 | vessel_3  | ABC              | TOA   | 11         |         11.2 |     489 |        233 |       18 |            1 |      1.6 |       65.68 |
-| 2017_vessel_4\_881A | 881A |   2017 | vessel_4  | CDE              | TOA   | 13         |         25.8 |    1250 |        289 |       28 |            0 |      1.1 |       65.35 |
-| 2017_vessel_5\_881A | 881A |   2017 | vessel_5  | CDE              | TOA   | 14         |          8.4 |     610 |         85 |        9 |            0 |      1.1 |       42.76 |
+| GROUP_ID | AREA | SEASON | SHIP_NAME | NATIONALITY_CODE | TAXON | LOGBOOK_ID | CATCH_TONNES | CATCH_N | MEASURED_N | TAGGED_N | RECAPTURED_N | TAG_RATE | TAG_OVERLAP |
+|:---|:---|---:|:---|:---|:---|:---|---:|---:|---:|---:|---:|---:|---:|
+| 2017_vessel_1_881A | 881A | 2017 | vessel_1 | XYZ | TOA | 15 | 4.1 | 163 | 158 | 17 | 1 | 4.1 | 69.34 |
+| 2017_vessel_2_881A | 881A | 2017 | vessel_2 | XYZ | TOA | 12 | 15.1 | 1241 | 284 | 48 | 0 | 3.2 | 77.06 |
+| 2017_vessel_3_881A | 881A | 2017 | vessel_3 | ABC | TOA | 11 | 11.2 | 489 | 233 | 18 | 1 | 1.6 | 65.68 |
+| 2017_vessel_4_881A | 881A | 2017 | vessel_4 | CDE | TOA | 13 | 25.8 | 1250 | 289 | 28 | 0 | 1.1 | 65.35 |
+| 2017_vessel_5_881A | 881A | 2017 | vessel_5 | CDE | TOA | 14 | 8.4 | 610 | 85 | 9 | 0 | 1.1 | 42.76 |
+
+Alternatively, you can include a custom column in the C2 table that
+identifies the areas for which you would like to calculate the overlap
+statistic:
+
+``` r
+tag_olap(ccamlr_data = ccamlr_data, taxon = "TOA", seasons = c("2017"), areas = c("custom"), custom_areas = 'my_areas')
+```
+
+| GROUP_ID | AREA | SEASON | SHIP_NAME | NATIONALITY_CODE | TAXON | LOGBOOK_ID | CATCH_TONNES | CATCH_N | MEASURED_N | TAGGED_N | RECAPTURED_N | TAG_RATE | TAG_OVERLAP |
+|:---|:---|---:|:---|:---|:---|:---|---:|---:|---:|---:|---:|---:|---:|
+| 2017_vessel_1_area_1 | area_1 | 2017 | vessel_1 | XYZ | TOA | 15 | 5.4 | 180 | 69 | 7 | 1 | 1.3 | 52.56 |
+| 2017_vessel_1_area_2 | area_2 | 2017 | vessel_1 | XYZ | TOA | 15 | 2.8 | 81 | 81 | 14 | 0 | 5.0 | 50.43 |
+| 2017_vessel_1_area_3 | area_3 | 2017 | vessel_1 | XYZ | TOA | 15 | 3.9 | 189 | 135 | 11 | 1 | 2.8 | 57.08 |
+| 2017_vessel_2_area_1 | area_1 | 2017 | vessel_2 | XYZ | TOA | 12 | 7.6 | 562 | 174 | 30 | 0 | 3.9 | 77.15 |
+| 2017_vessel_2_area_2 | area_2 | 2017 | vessel_2 | XYZ | TOA | 12 | 7.7 | 455 | 68 | 14 | 0 | 1.8 | 40.27 |
 
 If you would like to calculate the tag overlap statistics for a specific
 vessel during a specific fishing season in a multiples areas (*e.g. SSRU
@@ -103,11 +119,11 @@ tag_olap(ccamlr_data = ccamlr_data, taxon = "TOA", vessels = c("vessel_1"),
          seasons = c("2017"), areas = c("881A", "481_1", "882"))
 ```
 
-| GROUP_ID             | AREA  | SEASON | SHIP_NAME | NATIONALITY_CODE | TAXON | LOGBOOK_ID | CATCH_TONNES | CATCH_N | MEASURED_N | TAGGED_N | RECAPTURED_N | TAG_RATE | TAG_OVERLAP |
-|:---------------------|:------|-------:|:----------|:-----------------|:------|:-----------|-------------:|--------:|-----------:|---------:|-------------:|---------:|------------:|
-| 2017_vessel_1\_481_1 | 481_1 |   2017 | vessel_1  | XYZ              | TOA   | 15         |          3.4 |     106 |         36 |        4 |            1 |      1.2 |       25.05 |
-| 2017_vessel_1\_881A  | 881A  |   2017 | vessel_1  | XYZ              | TOA   | 15         |          4.1 |     163 |        158 |       17 |            1 |      4.1 |       69.34 |
-| 2017_vessel_1\_882   | 882   |   2017 | vessel_1  | XYZ              | TOA   | 15         |          3.6 |     148 |         54 |        6 |            0 |      1.7 |       64.35 |
+| GROUP_ID | AREA | SEASON | SHIP_NAME | NATIONALITY_CODE | TAXON | LOGBOOK_ID | CATCH_TONNES | CATCH_N | MEASURED_N | TAGGED_N | RECAPTURED_N | TAG_RATE | TAG_OVERLAP |
+|:---|:---|---:|:---|:---|:---|:---|---:|---:|---:|---:|---:|---:|---:|
+| 2017_vessel_1_481_1 | 481_1 | 2017 | vessel_1 | XYZ | TOA | 15 | 3.4 | 106 | 36 | 4 | 1 | 1.2 | 25.05 |
+| 2017_vessel_1_881A | 881A | 2017 | vessel_1 | XYZ | TOA | 15 | 4.1 | 163 | 158 | 17 | 1 | 4.1 | 69.34 |
+| 2017_vessel_1_882 | 882 | 2017 | vessel_1 | XYZ | TOA | 15 | 3.6 | 148 | 54 | 6 | 0 | 1.7 | 64.35 |
 
 If you would like to calculate the tag overlap statistics for a specific
 vessel during a specific fishing season for all areas for which CM 41-01
@@ -120,12 +136,10 @@ tag_olap(ccamlr_data = ccamlr_data, taxon = "TOP", vessels = c("vessel_2"),
          seasons = c("2017"), areas = c("CCEP"))
 ```
 
-| GROUP_ID                   | AREA        | SEASON | SHIP_NAME | NATIONALITY_CODE | TAXON | LOGBOOK_ID | CATCH_TONNES | CATCH_N | MEASURED_N | TAGGED_N | RECAPTURED_N | TAG_RATE | TAG_OVERLAP |
-|:---------------------------|:------------|-------:|:----------|:-----------------|:------|:-----------|-------------:|--------:|-----------:|---------:|-------------:|---------:|:------------|
-| 2017_vessel_2\_882C        | 882C        |   2017 | vessel_2  | XYZ              | TOP   | 12         |         27.1 |    3806 |        303 |       40 |            7 |      1.5 | 67.94       |
-| 2017_vessel_2\_882D        | 882D        |   2017 | vessel_2  | XYZ              | TOP   | 12         |          8.8 |    1255 |         92 |       12 |            1 |      1.4 | NC          |
-| 2017_vessel_2\_882SRU_C\_G | 882SRU_C\_G |   2017 | vessel_2  | XYZ              | TOP   | 12         |         35.8 |    5061 |        395 |       52 |            8 |      1.5 | 70.32       |
-| 2017_vessel_2\_N70         | N70         |   2017 | vessel_2  | XYZ              | TOP   | 12         |         31.1 |    6028 |        214 |       30 |            5 |      1.0 | 67.5        |
+| GROUP_ID | AREA | SEASON | SHIP_NAME | NATIONALITY_CODE | TAXON | LOGBOOK_ID | CATCH_TONNES | CATCH_N | MEASURED_N | TAGGED_N | RECAPTURED_N | TAG_RATE | TAG_OVERLAP |
+|:---|:---|---:|:---|:---|:---|:---|---:|---:|---:|---:|---:|---:|:---|
+| 2017_vessel_2_882_4 | 882_4 | 2017 | vessel_2 | XYZ | TOP | 12 | 2.6 | 439 | 60 | 7 | 0 | 2.7 | NC |
+| 2017_vessel_2_N70 | N70 | 2017 | vessel_2 | XYZ | TOP | 12 | 31.1 | 6028 | 214 | 30 | 5 | 1.0 | 67.5 |
 
 The function also allows you to create a plot (*TRUE or FALSE*) showing
 the length frequency distributions of the caught fish and the tagged and
@@ -138,8 +152,8 @@ olap_toa$summary
 olap_toa$plots$`2017_vessel_2_881`
 ```
 
-| GROUP_ID           | AREA | SEASON | SHIP_NAME | NATIONALITY_CODE | TAXON | LOGBOOK_ID | CATCH_TONNES | CATCH_N | MEASURED_N | TAGGED_N | RECAPTURED_N | TAG_RATE | TAG_OVERLAP |
-|:-------------------|:-----|-------:|:----------|:-----------------|:------|:-----------|-------------:|--------:|-----------:|---------:|-------------:|---------:|------------:|
-| 2017_vessel_2\_881 | 881  |   2017 | vessel_2  | XYZ              | TOA   | 12         |         15.1 |    1241 |        284 |       48 |            0 |      3.2 |       77.06 |
+| GROUP_ID | AREA | SEASON | SHIP_NAME | NATIONALITY_CODE | TAXON | LOGBOOK_ID | CATCH_TONNES | CATCH_N | MEASURED_N | TAGGED_N | RECAPTURED_N | TAG_RATE | TAG_OVERLAP |
+|:---|:---|---:|:---|:---|:---|:---|---:|---:|---:|---:|---:|---:|---:|
+| 2017_vessel_2_881 | 881 | 2017 | vessel_2 | XYZ | TOA | 12 | 15.1 | 1241 | 284 | 48 | 0 | 3.2 | 77.06 |
 
 ![](readme_files/plot_olap_toa_2017-1.png)<!-- -->
