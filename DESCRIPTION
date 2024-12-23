@@ -1,7 +1,7 @@
 Package: CCAMLRTOOLS
 Type: Package
 Title: Package for working with CCAMLR data
-Version: 1.0
+Version: 1.1
 Authors@R: 
     person(given = "Daphnis",
            family = "De Pooter",

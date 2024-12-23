@@ -18,7 +18,7 @@
 #' tag_olap(ccamlr_data = ccamlr_data, taxon = 'TOA', vessels = c('vessel_2'), seasons = c(2016, 2017), areas = c("881"), plot = TRUE)
 #'
 
-tag_olap <- function(ccamlr_data, taxon = NA, seasons = NULL, vessels = NULL, areas = 'ALL',ccep_season = NULL, plot = F) {
+tag_olap <- function(ccamlr_data, taxon = NA, seasons = NULL, vessels = NULL, areas = 'ALL', ccep_season = NULL, plot = F) {
   
   # Check if ccamlr_data is a list of required dataframes
   required_dataframes <- c('C2', 'C2_CATCH', 'OBS_HAUL_BIOLOGY', 'OBS_HAUL_TAG_RELEASE', 'OBS_HAUL_TAG_RECAPTURE')
