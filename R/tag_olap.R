@@ -18,7 +18,7 @@
 #' tag_olap(ccamlr_data = ccamlr_data, taxon = 'TOA', vessels = c('vessel_2'), seasons = c(2016, 2017), areas = c("881"), plot = TRUE)
 #'
 
-tag_olap <- function(ccamlr_data, taxon = NA, seasons = NULL, vessels = NULL, areas = 'ALL', plot = F) {
+tag_olap <- function(ccamlr_data, taxon = NA, seasons = NULL, vessels = NULL, areas = 'ALL',ccep_season = NULL, plot = F) {
   
   # Check if ccamlr_data is a list of required dataframes
   required_dataframes <- c('C2', 'C2_CATCH', 'OBS_HAUL_BIOLOGY', 'OBS_HAUL_TAG_RELEASE', 'OBS_HAUL_TAG_RECAPTURE')
@@ -37,20 +37,22 @@ tag_olap <- function(ccamlr_data, taxon = NA, seasons = NULL, vessels = NULL, ar
 
   if (length(areas) == 1) {
     if (areas == 'CCEP') {
-      areas <- c('484', '486_2', '486_3', '486_4', '486_5', '5842_1', '5842_2', '5841_1',
-                 '5841_2', '5841_3', '5841_4', '5841_5', '5841_6', '882H', '882C', "882D",
-                 "882E", "882F", "882G", '882SRU_C_G', "S70", "N70", 'SRZ')
+      if(is.null(ccep_season)) {
+        areas <- ccep_olaps$ccep_current } else {
+          ccep_season <- as.character(ccep_season)
+          areas <- ccep_olaps$ccep_season
+        }
       CCEP <- TRUE
       filter_areas <- TRUE
     } else {
       CCEP <- FALSE
       filter_areas <- areas != 'ALL'
     }
+    
   } else {
     filter_areas <- TRUE
     CCEP <- FALSE
-  }
-  
+  }  
 
   # Keep only the necessary data frames for calculating the overlap statistic
   C2 <- ccamlr_data$C2
